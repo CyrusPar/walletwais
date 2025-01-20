@@ -52,14 +52,6 @@ foreach ($fetchUserById as $user) { ?>
     <?php include realpath(__DIR__ . '/app/layout/sidebar.php') ?>
 
     <div class="container">
-        <!-- Alert Section -->
-        <?php if ($message) { ?>
-            <div class="alert alert-<?= $messageType ?> alert-dismissible fade show" role="alert">
-                <?= $message ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        <?php } ?>
-
         <div class="app-header d-flex justify-content-between">
             <div class="d-flex align-items-center">
                 <!-- Add Click Event to Toggle Sidebar -->
@@ -78,6 +70,13 @@ foreach ($fetchUserById as $user) { ?>
     </div>
 
     <div class="app-body bg-light p-3">
+                <!-- Alert Section -->
+                <?php if ($message) { ?>
+            <div class="alert alert-<?= $messageType ?> alert-dismissible fade show" role="alert">
+                <?= $message ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php } ?>
         <div class="d-flex justify-content-between align-items-center">
             <h5>My Bills</h5>
         </div>
