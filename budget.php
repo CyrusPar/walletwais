@@ -53,7 +53,7 @@ foreach ($fetchUserById as $user) { ?>
             flex-direction: column; /* Stack the card and button vertically */
             justify-content: flex-start; /* Align to the top */
             align-items: center; /* Horizontally center */
-            height: 80vh;
+            height: 55vh;
             text-align: center;
             color: white;
             padding-top: 20px;
@@ -130,11 +130,13 @@ foreach ($fetchUserById as $user) { ?>
             <?php
             include 'budgeting.php';
             // Pass the userId to display the wallet and budgeting details
-            displayBudgeting($userId);
-        ?>
+            displayBudgeting($userId);?>
+        <?php include 'dailytracker.php';
+            // Pass the userId to display the wallet and budgeting details
+            dailyTracker($userId);?>
         </div>
 
-        <!-- Include the budgeting section -->
+
 
 
 
