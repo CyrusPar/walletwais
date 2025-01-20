@@ -10,8 +10,12 @@
             <span class="text-light">Expense</span>
         </a>
         <a href="history.php" class="text-center text-decoration-none">
-        <i class="bi bi-clock-history text-light fs-3"></i> <br>
+            <i class="bi bi-clock-history text-light fs-3"></i> <br>
             <span class="text-light">History</span>
+        </a>
+        <a href="budget.php" class="text-center text-decoration-none">
+            <i class="bi bi-wallet2 text-light fs-3"></i> <br>
+            <span class="text-light">Budget</span>
         </a>
         <a href="settings.php" class="text-center text-decoration-none">
             <i class="bi bi-gear text-light fs-3"></i> <br>
