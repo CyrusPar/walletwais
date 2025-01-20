@@ -90,4 +90,39 @@ class UsersFacade extends DBConnection
         return false;
     }
 
+    function updateSavings($userId, $amount)
+    {
+        // First, fetch the current wallet balance.
+        $sql = $this->connect()->prepare("SELECT savings FROM tbl_users WHERE id = ?");
+        $sql->execute([$userId]);
+        $result = $sql->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            $currentBalance = floatval($result['savings']);
+            $newBalance = $currentBalance + $amount;
+
+            // Update the wallet with the new balance.
+            $updateSql = $this->connect()->prepare("UPDATE tbl_users SET savings = ? WHERE id = ?");
+            $updateResult = $updateSql->execute([$newBalance, $userId]);
+
+            return $updateResult;
+        }
+
+        return false;
+    }
+    
+    function fetchSavingsByUserId($userId)
+    {
+        // Query to fetch the savings from the tbl_users table for the given user ID
+        $sql = $this->connect()->prepare("SELECT savings FROM tbl_users WHERE id = ?");
+        $sql->execute([$userId]);
+        
+        // Fetch the result as an associative array
+        $result = $sql->fetch(PDO::FETCH_ASSOC);
+        
+        // If a result is found, return the savings value; otherwise, return 0
+        return $result ? floatval($result['savings']) : 0;
+    }
+    
+
 }
