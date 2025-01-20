@@ -64,7 +64,7 @@ foreach ($fetchUserById as $user) { ?>
             <!-- Display Wallet Amount -->
             <p class="text-light m-0 mb-2">Wallet: <?= number_format($user['wallet'], 2) ?></p>
             <!-- Add Amount Button -->
-            <button class="btn btn-light btn-sm">Add Amount</button>
+            <button class="btn btn-light btn-sm" onclick="showAddAmountModal()">Add Amount</button>
         </div>
     </div>
 </div>
