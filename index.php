@@ -14,6 +14,29 @@ if ($userId == 0) {
     header("Location: splash.php");
 }
 
+// Message variables to display alerts
+$message = null;
+$messageType = null;
+
+if (isset($_POST['addAmount'])) {
+    $amountToAdd = floatval($_POST['amount']);
+    if ($amountToAdd > 0) {
+        // Call the updateWallet method to add the amount to the wallet
+        $updateResult = $usersFacade->updateWallet($userId, $amountToAdd);
+
+        if ($updateResult) {
+            $message = "Amount added successfully!";
+            $messageType = "success";
+        } else {
+            $message = "Failed to add amount. Please try again.";
+            $messageType = "danger";
+        }
+    } else {
+        $message = "Invalid amount. Please enter a valid number.";
+        $messageType = "danger";
+    }
+}
+
 $fetchUserById = $usersFacade->fetchUserById($userId);
 foreach ($fetchUserById as $user) { ?>
 
@@ -21,11 +44,22 @@ foreach ($fetchUserById as $user) { ?>
         body {
             background-color: #058240;
         }
+        .alert {
+            margin-top: 10px;
+        }
     </style>
 
     <?php include realpath(__DIR__ . '/app/layout/sidebar.php') ?>
 
     <div class="container">
+        <!-- Alert Section -->
+        <?php if ($message) { ?>
+            <div class="alert alert-<?= $messageType ?> alert-dismissible fade show" role="alert">
+                <?= $message ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php } ?>
+
         <div class="app-header d-flex justify-content-between">
             <div class="d-flex align-items-center">
                 <!-- Add Click Event to Toggle Sidebar -->
@@ -115,27 +149,6 @@ foreach ($fetchUserById as $user) { ?>
             document.getElementById('addAmountModal').style.display = 'none';
         }
     </script>
-
-    <?php
-    // Handle Add Amount Form Submission
-    if (isset($_POST['addAmount'])) {
-        $amountToAdd = floatval($_POST['amount']);
-        if ($amountToAdd > 0) {
-            // Call the updateWallet method to add the amount to the wallet
-            $updateResult = $usersFacade->updateWallet($userId, $amountToAdd);
-
-            if ($updateResult) {
-                // Simply close the modal without reloading the page
-                echo "<script>hideAddAmountModal();</script>";
-                echo "<script>alert('Amount added successfully!');</script>";
-            } else {
-                echo "<script>alert('Failed to add amount. Please try again.');</script>";
-            }
-        } else {
-            echo "<script>alert('Invalid amount. Please enter a valid number.');</script>";
-        }
-    }
-    ?>
 
     <?php include realpath(__DIR__ . '/app/layout/navbar.php') ?>
 
