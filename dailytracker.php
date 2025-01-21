@@ -14,7 +14,7 @@ function getWeekStartEndDates($date) {
 function dailyTracker($userId, $startDate = null, $endDate = null) {
     global $usersFacade, $billsFacade; // Assuming $usersFacade and $billsFacade are defined elsewhere
 
-    // If no specific week is provided, we calculate the start and end of the current week
+    // If no specific week is provided, calculate the start and end of the current week
     if (!$startDate || !$endDate) {
         $currentDate = new DateTime();
         $currentDate->modify('this week'); // Get the start of the current week (Monday)
@@ -31,7 +31,6 @@ function dailyTracker($userId, $startDate = null, $endDate = null) {
     $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     $weeklyExpenses = array_fill(0, 7, 0);  // Initialize array to hold expenses for each day of the week
 
-    // Loop through the user data to extract the user_code
     foreach ($fetchUserById as $user) {
         // Fetch bills using the user_code from the fetched user data
         $fetchBillsByCode = $billsFacade->fetchBillByCode($user['user_code']); // Pass the user_code here
@@ -40,47 +39,48 @@ function dailyTracker($userId, $startDate = null, $endDate = null) {
         ?>
         <div style="text-align: left; margin-top: 20px;">
             <button id="showDetailsBtn" onclick="toggleDetails()" style="background-color: #058240; color: white; padding: 10px 20px; border: none; border-radius: 5px;">
-                Show Details
+                Todays Week Tracker
             </button>
         </div>
-
-        <!-- Initially hidden email, user code, and bills with green text -->
-        <p id="email" style="display:none; margin-top: 10px; color: #058240;">
-            Email: <?= htmlspecialchars($user['email']) ?>
-        </p>
-        <p id="userCode" style="display:none; margin-top: 10px; color: #058240;">
-            User Code: <?= htmlspecialchars($user['user_code']) ?>
-        </p>
 
         <!-- Bills section -->
         <div id="bills" style="display:none; margin-top: 10px;">
             <h3 style="color: #058240;">Bills (From <?= $startDate ?> to <?= $endDate ?>):</h3>
             <?php if (!empty($fetchBillsByCode)) { ?>
-                <ul style="color: #058240;">
-                    <?php foreach ($fetchBillsByCode as $bill) { 
-                        $billNames[] = $bill['bill_name'];
-                        $expense = (float) $bill['expense'];
+                <table style="width: 100%; border-collapse: collapse; color: #058240; margin-top: 10px;">
+                    <thead>
+                        <tr style="background-color: #d9f1e4; text-align: center;">
+                            <th style="padding: 10px; border: 1px solid #058240;">Bill Name</th>
+                            <th style="padding: 10px; border: 1px solid #058240;">Expense</th>
+                            <th style="padding: 10px; border: 1px solid #058240;">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($fetchBillsByCode as $bill) { 
+                            $billNames[] = $bill['bill_name'];
+                            $expense = (float) $bill['expense'];
 
-                        // Get the date of the bill and check if it falls within the selected week
-                        $billDate = new DateTime($bill['Date']);
-                        if ($billDate >= new DateTime($startDate) && $billDate <= new DateTime($endDate)) {
-                            // Get the day of the week (0 = Monday, 6 = Sunday)
-                            $dayOfWeek = $billDate->format('N') - 1;
+                            // Get the date of the bill and check if it falls within the selected week
+                            $billDate = new DateTime($bill['Date']);
+                            if ($billDate >= new DateTime($startDate) && $billDate <= new DateTime($endDate)) {
+                                // Get the day of the week (0 = Monday, 6 = Sunday)
+                                $dayOfWeek = $billDate->format('N') - 1;
 
-                            // Add the expense to the corresponding day of the week
-                            $weeklyExpenses[$dayOfWeek] += $expense;
-                        }
-                    ?>
-                        <li>
-                            <strong><?= htmlspecialchars($bill['bill_name']) ?></strong> - 
-                            Expense: <?= htmlspecialchars($bill['expense']) ?> - 
-                            Date: <?= htmlspecialchars($bill['Date']) ?>
-                        </li>
-                    <?php } ?>
-                </ul>
+                                // Add the expense to the corresponding day of the week
+                                $weeklyExpenses[$dayOfWeek] += $expense;
+                            }
+                        ?>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #058240;"><?= htmlspecialchars($bill['bill_name']) ?></td>
+                            <td style="padding: 10px; border: 1px solid #058240; text-align: center;"><?= number_format($expense, 2) ?> Php</td>
+                            <td style="padding: 10px; border: 1px solid #058240; text-align: center;"><?= htmlspecialchars($bill['Date']) ?></td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
 
                 <!-- Bar Chart for bills by day of the week -->
-                <canvas id="billChart" width="400" height="200"></canvas>
+                <canvas id="billChart" width="400" height="200" style="margin-top: 20px;"></canvas>
             <?php } else { ?>
                 <p style="color: #058240;">No bills found for this user within the selected week.</p>
             <?php } ?>
@@ -88,23 +88,9 @@ function dailyTracker($userId, $startDate = null, $endDate = null) {
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-            // Function to toggle the visibility of the email, user code, and bills
+            // Function to toggle the visibility of the bills
             function toggleDetails() {
-                var emailElement = document.getElementById('email');
-                var userCodeElement = document.getElementById('userCode');
                 var billsElement = document.getElementById('bills');
-                
-                // Toggle display property for email
-                emailElement.style.display = (emailElement.style.display === "none" || emailElement.style.display === "") 
-                    ? "block" 
-                    : "none";
-
-                // Toggle display property for user code
-                userCodeElement.style.display = (userCodeElement.style.display === "none" || userCodeElement.style.display === "") 
-                    ? "block" 
-                    : "none";
-
-                // Toggle display property for bills
                 billsElement.style.display = (billsElement.style.display === "none" || billsElement.style.display === "") 
                     ? "block" 
                     : "none";
@@ -138,7 +124,7 @@ function dailyTracker($userId, $startDate = null, $endDate = null) {
     }
 }
 
-// If a user selects a specific date, we calculate the week and display the bills
+// If a user selects a specific date, calculate the week and display the bills
 if (isset($_GET['selectedDate'])) {
     $selectedDate = $_GET['selectedDate'];
     list($startDate, $endDate) = getWeekStartEndDates($selectedDate);

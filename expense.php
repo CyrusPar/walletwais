@@ -89,6 +89,10 @@ foreach ($fetchUserById as $user) { ?>
     </div>
 
     <div class="app-body bg-light p-3">
+    <?php
+        include 'notif.php';
+        checkNotifications($userId);
+        ?>
         <?php include realpath(__DIR__ . '/errors.php') ?>
         <div class="d-flex justify-content-between align-items-center">
             <h5>Individual</h5>

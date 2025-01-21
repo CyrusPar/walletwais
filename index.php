@@ -52,22 +52,17 @@ foreach ($fetchUserById as $user) { ?>
     <?php include realpath(__DIR__ . '/app/layout/sidebar.php') ?>
 
     <div class="container">
-    <div class="app-header d-flex justify-content-between">
-        <div class="d-flex align-items-center">
-            <!-- Add Click Event to Toggle Sidebar -->
-            <i class="bi bi-list text-light fs-1" id="sidebarToggle"></i>
-        </div>
-        <div class="d-flex align-items-center text-center">
-            <p class="text-light m-0 ps-2 pt-1">Welcome <br> <span><?= substr($user['email'], 0, 8) . '***' ?></span></p>
-        </div>
-        <div class="d-flex flex-column align-items-center justify-content-center text-center">
-            <!-- Display Wallet Amount -->
-            <p class="text-light m-0 mb-2">Wallet: <?= number_format($user['wallet'], 2) ?></p>
-            <!-- Add Amount Button -->
-            <button class="btn btn-light btn-sm" onclick="showAddAmountModal()">Add Amount</button>
+        <div class="app-header d-flex justify-content-between">
+            <div class="d-flex align-items-center">
+                <!-- Add Click Event to Toggle Sidebar -->
+                <i class="bi bi-list text-light fs-1" id="sidebarToggle"></i>
+            </div>
+            <div class="d-flex align-items-center text-center">
+                <p class="text-light m-0 ps-2 pt-1">Welcome <br> <span><?= substr($user['email'], 0, 8) . '***' ?></span></p>
+            </div>
+            <div></div>
         </div>
     </div>
-</div>
 
 
     <div class="app-body bg-light p-3">

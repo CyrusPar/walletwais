@@ -164,6 +164,10 @@ foreach ($fetchUserById as $user) { ?>
     </div>
 
     <div class="app-body bg-light p-1">
+        <?php
+        include 'notif.php';
+        checkNotifications($userId);
+        ?>
         <!-- Alert Section (above the wallet card) -->
         <?php if ($message) { ?>
             <div class="alert alert-<?= $messageType ?> alert-dismissible fade show" role="alert">

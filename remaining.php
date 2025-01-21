@@ -90,40 +90,44 @@ function remainingBudget($userId) {
             echo $warningMessageWeekly;
             echo '</div>';
         }
-        $todays = new DateTime();
-        echo $today->format('Y-m-d'); // Display in 'YYYY-MM-DD' format
 
-        // Display the bills for today in a green container
+        // Display the bills for today in a table
         if (!empty($todayBills)) {
             echo '<div style="background-color: #e0f9e0; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);">';
             echo "<h3 style='color: #058240;'>Bills for Today:</h3>";
-            echo "<ul style='list-style-type: none; padding-left: 0;'>";
+            echo '<table style="width: 100%; border-collapse: collapse; color: #058240; margin-top: 10px;">';
+            echo '<thead>';
+            echo '<tr style="background-color: #d9f1e4; text-align: center;">';
+            echo '<th style="padding: 10px; border: 1px solid #058240;">Bill Name</th>';
+            echo '<th style="padding: 10px; border: 1px solid #058240;">Expense</th>';
+            echo '<th style="padding: 10px; border: 1px solid #058240;">Date</th>';
+            echo '</tr>';
+            echo '</thead>';
+            echo '<tbody>';
             foreach ($todayBills as $bill) {
-                echo "<li style='color: #058240; font-size: 18px; margin: 10px 0; transition: transform 0.3s;'>";
-                echo "<strong>" . htmlspecialchars($bill['bill_name']) . "</strong> - ";
-                echo "Expense: " . htmlspecialchars($bill['expense']) . " Php - ";
-                echo "Date: " . htmlspecialchars($bill['Date']);
-                echo "</li>";
+                echo '<tr>';
+                echo '<td style="padding: 10px; border: 1px solid #058240; text-align: center;">' . htmlspecialchars($bill['bill_name']) . '</td>';
+                echo '<td style="padding: 10px; border: 1px solid #058240; text-align: center;">' . number_format($bill['expense'], 2) . ' Php</td>';
+                echo '<td style="padding: 10px; border: 1px solid #058240; text-align: center;">' . htmlspecialchars($bill['Date']) . '</td>';
+                echo '</tr>';
             }
-            echo "</ul>";
+            echo '</tbody>';
+            echo '</table>';
+
+            // Add total expense for today below the table
+            $totalExpenseColor = $todayExpenses > $dailyAllowance ? 'red' : '#058240';
+            echo '<div style="margin-top: 20px; text-align: center;">';
+            echo '<h3 style="font-size: 20px; font-weight: bold; color: #058240;">Total Expense: </h3>';
+
+            echo '<div style="font-size: 24px; font-weight: bold; color: ' . $totalExpenseColor . ';">';
+            echo number_format($todayExpenses, 2) . ' Php';
             echo '</div>';
+            echo '</div>';
+            
+            echo '</div>'; // Close the container for bills
         } else {
             echo "<div style='color: #058240; font-size: 18px;'>No bills found for today.</div>";
         }
     }
 }
 ?>
-
-<style>
-    /* Hover effect for the circles */
-    .circle:hover {
-        background-color: #006f33; /* Darker green on hover */
-        cursor: pointer;
-    }
-
-    /* Hover effect for bills list items */
-    .bills-list li:hover {
-        transform: scale(1.05);
-        cursor: pointer;
-    }
-</style>
