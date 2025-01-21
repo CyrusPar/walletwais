@@ -26,8 +26,6 @@ function dailyTracker($userId, $startDate = null, $endDate = null) {
     $fetchUserById = $usersFacade->fetchUserById($userId);
 
     // Initialize arrays for the bill names, expenses, and days of the week
-    $billNames = [];
-    $expenses = [];
     $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     $weeklyExpenses = array_fill(0, 7, 0);  // Initialize array to hold expenses for each day of the week
 
@@ -35,7 +33,6 @@ function dailyTracker($userId, $startDate = null, $endDate = null) {
         // Fetch bills using the user_code from the fetched user data
         $fetchBillsByCode = $billsFacade->fetchBillByCode($user['user_code']); // Pass the user_code here
 
-        // Display the button to show the details
         ?>
         <div style="text-align: left; margin-top: 20px;">
             <button id="showDetailsBtn" onclick="toggleDetails()" style="background-color: #058240; color: white; padding: 10px 20px; border: none; border-radius: 5px;">
@@ -57,25 +54,27 @@ function dailyTracker($userId, $startDate = null, $endDate = null) {
                     </thead>
                     <tbody>
                         <?php foreach ($fetchBillsByCode as $bill) { 
-                            $billNames[] = $bill['bill_name'];
                             $expense = (float) $bill['expense'];
 
-                            // Get the date of the bill and check if it falls within the selected week
+                            // Get the date of the bill
                             $billDate = new DateTime($bill['Date']);
+
+                            // Check if the bill falls within the selected week
                             if ($billDate >= new DateTime($startDate) && $billDate <= new DateTime($endDate)) {
                                 // Get the day of the week (0 = Monday, 6 = Sunday)
                                 $dayOfWeek = $billDate->format('N') - 1;
 
                                 // Add the expense to the corresponding day of the week
                                 $weeklyExpenses[$dayOfWeek] += $expense;
+                                ?>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #058240;"><?= htmlspecialchars($bill['bill_name']) ?></td>
+                                    <td style="padding: 10px; border: 1px solid #058240; text-align: center;"><?= number_format($expense, 2) ?> Php</td>
+                                    <td style="padding: 10px; border: 1px solid #058240; text-align: center;"><?= htmlspecialchars($bill['Date']) ?></td>
+                                </tr>
+                                <?php
                             }
-                        ?>
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #058240;"><?= htmlspecialchars($bill['bill_name']) ?></td>
-                            <td style="padding: 10px; border: 1px solid #058240; text-align: center;"><?= number_format($expense, 2) ?> Php</td>
-                            <td style="padding: 10px; border: 1px solid #058240; text-align: center;"><?= htmlspecialchars($bill['Date']) ?></td>
-                        </tr>
-                        <?php } ?>
+                        } ?>
                     </tbody>
                 </table>
 

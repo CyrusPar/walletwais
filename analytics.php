@@ -131,19 +131,6 @@ foreach ($fetchUserById as $user) { ?>
                 <h6 class="m-0">Daily Expenses</h6>
             </div>
             <div class="card-body">
-                <div>
-                    <label for="dailySelect">Select Day:</label>
-                    <select id="dailySelect">
-                        <option value="all">All Days</option>
-                        <option value="0">Sunday</option>
-                        <option value="1">Monday</option>
-                        <option value="2">Tuesday</option>
-                        <option value="3">Wednesday</option>
-                        <option value="4">Thursday</option>
-                        <option value="5">Friday</option>
-                        <option value="6">Saturday</option>
-                    </select>
-                </div>
                 <div style="width: 70%; margin: auto;">
                     <canvas id="dailyExpensesChart"></canvas>
                 </div>
@@ -156,15 +143,6 @@ foreach ($fetchUserById as $user) { ?>
                 <h6 class="m-0">Weekly Expenses</h6>
             </div>
             <div class="card-body">
-                <div>
-                    <label for="weeklySelect">Select Week:</label>
-                    <select id="weeklySelect">
-                        <option value="all">All Weeks</option>
-                        <?php foreach ($weeklyBillLabels as $index => $label) { ?>
-                            <option value="<?= $index ?>"><?= $label ?></option>
-                        <?php } ?>
-                    </select>
-                </div>
                 <div style="width: 70%; margin: auto;">
                     <canvas id="weeklyExpensesChart"></canvas>
                 </div>
@@ -177,15 +155,6 @@ foreach ($fetchUserById as $user) { ?>
                 <h6 class="m-0">Monthly Expenses (Jan-Dec)</h6>
             </div>
             <div class="card-body">
-                <div>
-                    <label for="monthlySelect">Select Month:</label>
-                    <select id="monthlySelect">
-                        <option value="all">All Months</option>
-                        <?php foreach ($monthlyBillLabels as $index => $label) { ?>
-                            <option value="<?= $index ?>"><?= $label ?></option>
-                        <?php } ?>
-                    </select>
-                </div>
                 <div style="width: 70%; margin: auto;">
                     <canvas id="monthlyExpensesChart"></canvas>
                 </div>
@@ -198,15 +167,6 @@ foreach ($fetchUserById as $user) { ?>
                 <h6 class="m-0">Yearly Expenses (2020-2025)</h6>
             </div>
             <div class="card-body">
-                <div>
-                    <label for="yearlySelect">Select Year:</label>
-                    <select id="yearlySelect">
-                        <option value="all">All Years</option>
-                        <?php foreach ($yearlyBillLabels as $index => $label) { ?>
-                            <option value="<?= $index ?>"><?= $label ?></option>
-                        <?php } ?>
-                    </select>
-                </div>
                 <div style="width: 70%; margin: auto;">
                     <canvas id="yearlyExpensesChart"></canvas>
                 </div>
@@ -222,13 +182,6 @@ foreach ($fetchUserById as $user) { ?>
 <?php include realpath(__DIR__ . '/app/layout/footer.php') ?>
 
 <script>
-    // Function to update the charts with filtered data
-    function updateChart(chart, data, labels) {
-        chart.data.labels = labels;
-        chart.data.datasets[0].data = data;
-        chart.update();
-    }
-
     // Daily Expenses Chart
     var dailyExpenses = <?php echo $daily_bill_expenses_json; ?>;
     var dailyLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -255,18 +208,6 @@ foreach ($fetchUserById as $user) { ?>
                 }
             }
         }
-    });
-
-    document.getElementById('dailySelect').addEventListener('change', function () {
-        var selectedDay = this.value;
-        var filteredExpenses = dailyExpenses.slice(); // Copy the daily expenses array
-
-        // If a specific day is selected, filter out others
-        if (selectedDay !== 'all') {
-            filteredExpenses = filteredExpenses.filter((expense, index) => index == selectedDay);
-        }
-
-        updateChart(dailyExpensesChart, filteredExpenses, dailyLabels);
     });
 
     // Weekly Expenses Chart
@@ -297,18 +238,6 @@ foreach ($fetchUserById as $user) { ?>
         }
     });
 
-    document.getElementById('weeklySelect').addEventListener('change', function () {
-        var selectedWeek = this.value;
-        var filteredExpenses = weeklyExpenses.slice(); // Copy the weekly expenses array
-
-        // If a specific week is selected, filter out others
-        if (selectedWeek !== 'all') {
-            filteredExpenses = filteredExpenses.filter((expense, index) => index == selectedWeek);
-        }
-
-        updateChart(weeklyExpensesChart, filteredExpenses, weeklyLabels);
-    });
-
     // Monthly Expenses Chart
     var monthlyExpenses = <?php echo $monthly_bill_expenses_json; ?>;
     var monthlyLabels = <?php echo $monthly_bill_labels_json; ?>;
@@ -337,18 +266,6 @@ foreach ($fetchUserById as $user) { ?>
         }
     });
 
-    document.getElementById('monthlySelect').addEventListener('change', function () {
-        var selectedMonth = this.value;
-        var filteredExpenses = monthlyExpenses.slice(); // Copy the monthly expenses array
-
-        // If a specific month is selected, filter out others
-        if (selectedMonth !== 'all') {
-            filteredExpenses = filteredExpenses.filter((expense, index) => index == selectedMonth);
-        }
-
-        updateChart(monthlyExpensesChart, filteredExpenses, monthlyLabels);
-    });
-
     // Yearly Expenses Chart
     var yearlyExpenses = <?php echo $yearly_bill_expenses_json; ?>;
     var yearlyLabels = ['2020', '2021', '2022', '2023', '2024', '2025'];
@@ -375,17 +292,5 @@ foreach ($fetchUserById as $user) { ?>
                 }
             }
         }
-    });
-
-    document.getElementById('yearlySelect').addEventListener('change', function () {
-        var selectedYear = this.value;
-        var filteredExpenses = yearlyExpenses.slice(); // Copy the yearly expenses array
-
-        // If a specific year is selected, filter out others
-        if (selectedYear !== 'all') {
-            filteredExpenses = filteredExpenses.filter((expense, index) => index == selectedYear);
-        }
-
-        updateChart(yearlyExpensesChart, filteredExpenses, yearlyLabels);
     });
 </script>

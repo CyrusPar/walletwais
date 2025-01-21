@@ -7,10 +7,10 @@ function remainingBudget($userId) {
     $fetchUserById = $usersFacade->fetchUserById($userId);
 
     foreach ($fetchUserById as $user) {
-        // Get the wallet value and calculate daily allowance
+        // Get the wallet value and calculate allowances
         $walletValue = $user['wallet'];
         $dailyAllowance = $walletValue / 31;
-        $weeklyAllowance = $walletValue / 4; // Weekly allowance
+        $weeklyAllowance = $walletValue / 4;
 
         // Get today's date
         $today = new DateTime();
@@ -18,116 +18,109 @@ function remainingBudget($userId) {
 
         // Fetch the bills for today
         $fetchBillsByCode = $billsFacade->fetchBillByCode($user['user_code']);
-        
         $todayExpenses = 0;
         $todayBills = [];
 
-        // Loop through bills and sum the expenses for today
+        // Loop through bills and calculate today's expenses
         foreach ($fetchBillsByCode as $bill) {
             $billDate = new DateTime($bill['Date']);
             if ($billDate->format('Y-m-d') == $todayFormatted) {
-                $todayExpenses += (float) $bill['expense'];
+                $todayExpenses += (float)$bill['expense'];
                 $todayBills[] = $bill;
             }
         }
 
-        // Subtract today's expenses from the daily allowance
+        // Calculate remaining allowances
         $remainingDailyAllowance = $dailyAllowance - $todayExpenses;
-        $remainingWeeklyAllowance = $weeklyAllowance - $todayExpenses; // Weekly allowance remaining
+        $remainingWeeklyAllowance = $weeklyAllowance - $todayExpenses;
 
-        // Set color and message for daily allowance
+        // Determine colors and warning messages
         $circleColorDaily = $remainingDailyAllowance < 0 ? 'red' : '#058240';
-        $warningMessageDaily = $remainingDailyAllowance < 0 ? 'Daily expense exceeded' : '';
-
-        // Set color and message for weekly allowance
         $circleColorWeekly = $remainingWeeklyAllowance < 0 ? 'red' : '#058240';
-        $warningMessageWeekly = $remainingWeeklyAllowance < 0 ? 'Weekly expense exceeded' : '';
+        $warningMessageDaily = $remainingDailyAllowance < 0 ? 'Daily expense exceeded!' : '';
+        $warningMessageWeekly = $remainingWeeklyAllowance < 0 ? 'Weekly expense exceeded!' : '';
 
-        // Display the green circle with the remaining daily allowance
-        echo '<div style="display: flex; justify-content: center; align-items: center; flex-direction: column; margin-bottom: 30px;">';
-        
-        // Header for daily allowance circle
-        echo '<h3 style="color: #058240; text-align: center; font-size: 24px; font-weight: bold;">Remaining Daily Allowance</h3>';
+        ?>
 
-        // Container for the daily circle with shadow
-        echo '<div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15); border-radius: 10px; padding: 20px; background-color: #f9f9f9;">';
-        
-        // Daily allowance circle with shadow effect
-        echo '<div style="width: 150px; height: 150px; border-radius: 50%; background-color: ' . $circleColorDaily . '; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; transition: background-color 0.3s; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);">';
-        echo number_format($remainingDailyAllowance, 2) . ' Php';
-        echo '</div>';
-        
-        echo '</div>';
-        echo '</div>';
 
-        // Display warning if the expenses exceed the daily allowance
-        if ($warningMessageDaily) {
-            echo '<div style="text-align: center; color: red; font-size: 18px; font-weight: bold; margin-bottom: 20px;">';
-            echo $warningMessageDaily;
-            echo '</div>';
-        }
 
-        // Display the weekly allowance circle
-        echo '<div style="display: flex; justify-content: center; align-items: center; flex-direction: column; margin-bottom: 30px;">';
-        
-        // Header for weekly allowance circle
-        echo '<h3 style="color: #058240; text-align: center; font-size: 24px; font-weight: bold;">Remaining Weekly Allowance</h3>';
+        <h2 style="text-align: center; color: #058240; font-size: 28px; font-weight: bold; margin-bottom: 20px; margin-top:20px;">Expense Tracker</h2>
 
-        // Container for the weekly circle with shadow
-        echo '<div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15); border-radius: 10px; padding: 20px; background-color: #f9f9f9;">';
-        
-        // Weekly allowance circle with shadow effect
-        echo '<div style="width: 150px; height: 150px; border-radius: 50%; background-color: ' . $circleColorWeekly . '; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; transition: background-color 0.3s; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);">';
-        echo number_format($remainingWeeklyAllowance, 2) . ' Php';
-        echo '</div>';
-        
-        echo '</div>';
-        echo '</div>';
+        <!-- Daily Tracker -->
+        <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; margin-bottom: 40px;">
+            <h3 style="color: #058240; text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Daily Tracker</h3>
 
-        // Display warning if the expenses exceed the weekly allowance
-        if ($warningMessageWeekly) {
-            echo '<div style="text-align: center; color: red; font-size: 18px; font-weight: bold; margin-bottom: 20px;">';
-            echo $warningMessageWeekly;
-            echo '</div>';
-        }
+            <div style="width: 180px; height: 180px; border-radius: 50%; background-color: <?php echo $circleColorDaily; ?>; color: white; display: flex; justify-content: center; align-items: center; flex-direction: column; font-size: 20px; font-weight: bold; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); margin-bottom: 10px; animation: moveUpDown 2s infinite;">
+                <div><?php echo number_format($remainingDailyAllowance, 2); ?> Php</div>
+                <div style="font-size: 14px; font-weight: normal;">Daily Allowance</div>
+            </div>
 
-        // Display the bills for today in a table
-        if (!empty($todayBills)) {
-            echo '<div style="background-color: #e0f9e0; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);">';
-            echo "<h3 style='color: #058240;'>Bills for Today:</h3>";
-            echo '<table style="width: 100%; border-collapse: collapse; color: #058240; margin-top: 10px;">';
-            echo '<thead>';
-            echo '<tr style="background-color: #d9f1e4; text-align: center;">';
-            echo '<th style="padding: 10px; border: 1px solid #058240;">Bill Name</th>';
-            echo '<th style="padding: 10px; border: 1px solid #058240;">Expense</th>';
-            echo '<th style="padding: 10px; border: 1px solid #058240;">Date</th>';
-            echo '</tr>';
-            echo '</thead>';
-            echo '<tbody>';
-            foreach ($todayBills as $bill) {
-                echo '<tr>';
-                echo '<td style="padding: 10px; border: 1px solid #058240; text-align: center;">' . htmlspecialchars($bill['bill_name']) . '</td>';
-                echo '<td style="padding: 10px; border: 1px solid #058240; text-align: center;">' . number_format($bill['expense'], 2) . ' Php</td>';
-                echo '<td style="padding: 10px; border: 1px solid #058240; text-align: center;">' . htmlspecialchars($bill['Date']) . '</td>';
-                echo '</tr>';
-            }
-            echo '</tbody>';
-            echo '</table>';
+            <?php if ($warningMessageDaily): ?>
+                <div style="text-align: center; color: red; font-size: 16px; font-weight: bold;"><?php echo $warningMessageDaily; ?></div>
+            <?php endif; ?>
+        </div>
 
-            // Add total expense for today below the table
-            $totalExpenseColor = $todayExpenses > $dailyAllowance ? 'red' : '#058240';
-            echo '<div style="margin-top: 20px; text-align: center;">';
-            echo '<h3 style="font-size: 20px; font-weight: bold; color: #058240;">Total Expense: </h3>';
+        <!-- Weekly Tracker -->
+        <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; margin-bottom: 40px;">
+            <h3 style="color: #058240; text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Weekly Tracker</h3>
 
-            echo '<div style="font-size: 24px; font-weight: bold; color: ' . $totalExpenseColor . ';">';
-            echo number_format($todayExpenses, 2) . ' Php';
-            echo '</div>';
-            echo '</div>';
-            
-            echo '</div>'; // Close the container for bills
-        } else {
-            echo "<div style='color: #058240; font-size: 18px;'>No bills found for today.</div>";
-        }
-    }
+            <div style="width: 180px; height: 180px; border-radius: 50%; background-color: <?php echo $circleColorWeekly; ?>; color: white; display: flex; justify-content: center; align-items: center; flex-direction: column; font-size: 20px; font-weight: bold; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); margin-bottom: 10px; animation: moveUpDown 2s infinite;">
+                <div><?php echo number_format($remainingWeeklyAllowance, 2); ?> Php</div>
+                <div style="font-size: 14px; font-weight: normal;">Weekly Allowance</div>
+            </div>
+
+            <?php if ($warningMessageWeekly): ?>
+                <div style="text-align: center; color: red; font-size: 16px; font-weight: bold;"><?php echo $warningMessageWeekly; ?></div>
+            <?php endif; ?>
+        </div>
+
+        <!-- Bills for Today -->
+        <?php if (!empty($todayBills)): ?>
+            <div style="background-color: #e0f9e0; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);">
+                <h3 style="color: #058240;">Bills for Today:</h3>
+                <table style="width: 100%; border-collapse: collapse; color: #058240; margin-top: 10px;">
+                    <thead>
+                        <tr style="background-color: #d9f1e4; text-align: center;">
+                            <th style="padding: 10px; border: 1px solid #058240;">Bill Name</th>
+                            <th style="padding: 10px; border: 1px solid #058240;">Expense</th>
+                            <th style="padding: 10px; border: 1px solid #058240;">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($todayBills as $bill): ?>
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #058240; text-align: center;"><?php echo htmlspecialchars($bill['bill_name']); ?></td>
+                                <td style="padding: 10px; border: 1px solid #058240; text-align: center;"><?php echo number_format($bill['expense'], 2); ?> Php</td>
+                                <td style="padding: 10px; border: 1px solid #058240; text-align: center;"><?php echo htmlspecialchars($bill['Date']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 20px; text-align: center;">
+                    <h3 style="font-size: 20px; font-weight: bold; color: #058240;">Total Expense: </h3>
+                    <div style="font-size: 24px; font-weight: bold; color: <?php echo $todayExpenses > $dailyAllowance ? 'red' : '#058240'; ?>;">
+                        <?php echo number_format($todayExpenses, 2); ?> Php
+                    </div>
+                </div>
+            </div>
+        <?php else: ?>
+            <div style="color: #058240; font-size: 18px; text-align: center;">No bills found for today.</div>
+        <?php endif; ?>
+    <?php }
 }
 ?>
+
+<style>
+@keyframes moveUpDown {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+</style>

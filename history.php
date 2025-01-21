@@ -32,6 +32,20 @@ foreach ($fetchUserById as $user) { ?>
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
+        #historySection {
+            display: none; /* Initially hide the history section */
+        }
+        .show-button {
+            background-color: #058240;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px auto; /* Centers the button */
+            display: block;
+            text-align: center;
+        }
     </style>
 
     <?php include realpath(__DIR__ . '/app/layout/sidebar.php') ?>
@@ -89,14 +103,34 @@ foreach ($fetchUserById as $user) { ?>
             </tbody>
         </table>
 
-        <!-- Section for History without Amounts -->
+        <!-- Button for toggling history -->
         <h6>History </h6>
-        <ul>
-            <?php foreach ($messagesWithoutAmount as $msg) { ?>
-                <li><?= $msg ?></li>
-            <?php } ?>
-        </ul>
+        <button class="show-button" onclick="toggleHistory()">Show All History</button>
+        <div id="historySection">
+            <ul>
+                <?php foreach ($messagesWithoutAmount as $msg) { ?>
+                    <li><?= $msg ?></li>
+                <?php } ?>
+            </ul>
+        </div>
+        <?php
+
+        include 'historybills.php';
+        historyTracker($userId);
+
+        ?>
     </div>
+
+    <script>
+        function toggleHistory() {
+            const historySection = document.getElementById('historySection');
+            if (historySection.style.display === 'none' || historySection.style.display === '') {
+                historySection.style.display = 'block'; // Show the section
+            } else {
+                historySection.style.display = 'none'; // Hide the section
+            }
+        }
+    </script>
 
     <?php include realpath(__DIR__ . '/app/layout/navbar.php') ?>
 
