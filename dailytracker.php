@@ -1,16 +1,4 @@
 <?php
-// Function to calculate the start and end date of the week for a given date
-function getWeekStartEndDates($date) {
-    $dt = new DateTime($date);
-    $dt->modify('Monday this week'); // Start of the week (Monday)
-    $startDate = $dt->format('Y-m-d'); // Start of the week in 'Y-m-d' format
-
-    $dt->modify('Sunday this week'); // End of the week (Sunday)
-    $endDate = $dt->format('Y-m-d'); // End of the week in 'Y-m-d' format
-
-    return [$startDate, $endDate];
-}
-
 function dailyTracker($userId, $startDate = null, $endDate = null) {
     global $usersFacade, $billsFacade; // Assuming $usersFacade and $billsFacade are defined elsewhere
 
@@ -27,9 +15,12 @@ function dailyTracker($userId, $startDate = null, $endDate = null) {
 
     // Initialize arrays for the bill names, expenses, and days of the week
     $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    $weeklyExpenses = array_fill(0, 7, 0);  // Initialize array to hold expenses for each day of the week
+    $weeklyExpenses = array_fill(0, 7, 0); // Initialize array to hold expenses for each day of the week
 
     foreach ($fetchUserById as $user) {
+        // Get the weekly allowance from the user's wallet
+        $weeklyAllowance = $user['wallet'] / 4;
+
         // Fetch bills using the user_code from the fetched user data
         $fetchBillsByCode = $billsFacade->fetchBillByCode($user['user_code']); // Pass the user_code here
 
@@ -78,6 +69,18 @@ function dailyTracker($userId, $startDate = null, $endDate = null) {
                     </tbody>
                 </table>
 
+                <!-- Weekly Total Expense -->
+                <?php 
+                $totalWeeklyExpense = array_sum($weeklyExpenses);
+                $weeklyExpenseColor = $totalWeeklyExpense > $weeklyAllowance ? 'red' : '#058240'; 
+                ?>
+                <div style="margin-top: 20px; text-align: center;">
+                    <h3 style="font-size: 20px; font-weight: bold; color: #058240;">Total Weekly Expense:</h3>
+                    <div style="font-size: 24px; font-weight: bold; color: <?= $weeklyExpenseColor; ?>;">
+                        <?= number_format($totalWeeklyExpense, 2); ?> Php
+                    </div>
+                </div>
+
                 <!-- Bar Chart for bills by day of the week -->
                 <canvas id="billChart" width="400" height="200" style="margin-top: 20px;"></canvas>
             <?php } else { ?>
@@ -122,6 +125,7 @@ function dailyTracker($userId, $startDate = null, $endDate = null) {
         <?php
     }
 }
+
 
 // If a user selects a specific date, calculate the week and display the bills
 if (isset($_GET['selectedDate'])) {
