@@ -14,7 +14,6 @@ if ($userId == 0) {
     header("Location: splash.php");
 }
 
-// Database connection
 $host = 'localhost';
 $db = 'walletwais';
 $user = 'root';
@@ -22,7 +21,6 @@ $pass = '';
 
 $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
 
-// Query to get daily total expenses per user (grouped by day of the week)
 $dailyBillQuery = "SELECT DAYOFWEEK(Date) AS day_of_week, SUM(expense) AS total_expense 
                    FROM tbl_bills 
                    WHERE user_code = '$userCode' 
@@ -30,8 +28,8 @@ $dailyBillQuery = "SELECT DAYOFWEEK(Date) AS day_of_week, SUM(expense) AS total_
                    ORDER BY day_of_week";
 $dailyBillStmt = $pdo->query($dailyBillQuery);
 
-$dailyBillLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']; // Days of the week
-$dailyBillExpenses = [0, 0, 0, 0, 0, 0, 0]; // Initialize with zeros
+$dailyBillLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+$dailyBillExpenses = [0, 0, 0, 0, 0, 0, 0];
 
 while ($dailyBillRow = $dailyBillStmt->fetch(PDO::FETCH_ASSOC)) {
     $dailyBillExpenses[$dailyBillRow['day_of_week'] - 1] = $dailyBillRow['total_expense'];
@@ -39,8 +37,6 @@ while ($dailyBillRow = $dailyBillStmt->fetch(PDO::FETCH_ASSOC)) {
 
 $daily_bill_expenses_json = json_encode($dailyBillExpenses);
 
-
-// Query to get weekly total expenses per user (grouped by week of the year)
 $weeklyBillQuery = "SELECT WEEK(Date) AS week_of_year, SUM(expense) AS total_expense 
                     FROM tbl_bills 
                     WHERE user_code = '$userCode' 
@@ -48,8 +44,8 @@ $weeklyBillQuery = "SELECT WEEK(Date) AS week_of_year, SUM(expense) AS total_exp
                     ORDER BY week_of_year";
 $weeklyBillStmt = $pdo->query($weeklyBillQuery);
 
-$weeklyBillLabels = []; // Labels for weeks (e.g., Week 1, Week 2, ...)
-$weeklyBillExpenses = []; // Initialize with zeros
+$weeklyBillLabels = [];
+$weeklyBillExpenses = [];
 
 while ($weeklyBillRow = $weeklyBillStmt->fetch(PDO::FETCH_ASSOC)) {
     $weeklyBillLabels[] = "Week " . $weeklyBillRow['week_of_year'];
@@ -59,8 +55,6 @@ while ($weeklyBillRow = $weeklyBillStmt->fetch(PDO::FETCH_ASSOC)) {
 $weekly_bill_labels_json = json_encode($weeklyBillLabels);
 $weekly_bill_expenses_json = json_encode($weeklyBillExpenses);
 
-
-// Query to get monthly total expenses per user (grouped by months of the year)
 $monthlyBillQuery = "SELECT MONTH(Date) AS month_of_year, SUM(expense) AS total_expense 
                      FROM tbl_bills 
                      WHERE user_code = '$userCode' 
@@ -68,8 +62,8 @@ $monthlyBillQuery = "SELECT MONTH(Date) AS month_of_year, SUM(expense) AS total_
                      ORDER BY month_of_year";
 $monthlyBillStmt = $pdo->query($monthlyBillQuery);
 
-$monthlyBillLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']; // Months of the year
-$monthlyBillExpenses = array_fill(0, 12, 0); // Initialize with zeros
+$monthlyBillLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+$monthlyBillExpenses = array_fill(0, 12, 0);
 
 while ($monthlyBillRow = $monthlyBillStmt->fetch(PDO::FETCH_ASSOC)) {
     $monthlyBillExpenses[$monthlyBillRow['month_of_year'] - 1] = $monthlyBillRow['total_expense'];
@@ -78,8 +72,6 @@ while ($monthlyBillRow = $monthlyBillStmt->fetch(PDO::FETCH_ASSOC)) {
 $monthly_bill_labels_json = json_encode($monthlyBillLabels);
 $monthly_bill_expenses_json = json_encode($monthlyBillExpenses);
 
-
-// Query to get yearly total expenses per user (grouped by year)
 $yearlyBillQuery = "SELECT YEAR(Date) AS year_of_expense, SUM(expense) AS total_expense 
                     FROM tbl_bills 
                     WHERE user_code = '$userCode' 
@@ -87,8 +79,8 @@ $yearlyBillQuery = "SELECT YEAR(Date) AS year_of_expense, SUM(expense) AS total_
                     ORDER BY year_of_expense";
 $yearlyBillStmt = $pdo->query($yearlyBillQuery);
 
-$yearlyBillLabels = ['2020', '2021', '2022', '2023', '2024', '2025']; // Years range
-$yearlyBillExpenses = array_fill(0, 6, 0); // Initialize with zeros
+$yearlyBillLabels = ['2020', '2021', '2022', '2023', '2024', '2025'];
+$yearlyBillExpenses = array_fill(0, 6, 0);
 
 while ($yearlyBillRow = $yearlyBillStmt->fetch(PDO::FETCH_ASSOC)) {
     $yearIndex = $yearlyBillRow['year_of_expense'] - 2020;
@@ -97,8 +89,6 @@ while ($yearlyBillRow = $yearlyBillStmt->fetch(PDO::FETCH_ASSOC)) {
 
 $yearly_bill_expenses_json = json_encode($yearlyBillExpenses);
 
-
-// Fetch user details
 $fetchUserById = $usersFacade->fetchUserById($userId);
 foreach ($fetchUserById as $user) { ?>
 
@@ -125,7 +115,6 @@ foreach ($fetchUserById as $user) { ?>
     <div class="app-body bg-light p-3">
         <h5>Analytics</h5>
 
-        <!-- Daily Expenses Chart -->
         <div class="card mt-2">
             <div class="card-header">
                 <h6 class="m-0">Daily Expenses</h6>
@@ -137,7 +126,6 @@ foreach ($fetchUserById as $user) { ?>
             </div>
         </div>
 
-        <!-- Weekly Expenses Chart -->
         <div class="card mt-2">
             <div class="card-header">
                 <h6 class="m-0">Weekly Expenses</h6>
@@ -149,7 +137,6 @@ foreach ($fetchUserById as $user) { ?>
             </div>
         </div>
 
-        <!-- Monthly Expenses Chart -->
         <div class="card mt-2">
             <div class="card-header">
                 <h6 class="m-0">Monthly Expenses (Jan-Dec)</h6>
@@ -161,7 +148,6 @@ foreach ($fetchUserById as $user) { ?>
             </div>
         </div>
 
-        <!-- Yearly Expenses Chart -->
         <div class="card mt-2">
             <div class="card-header">
                 <h6 class="m-0">Yearly Expenses (2020-2025)</h6>
@@ -182,7 +168,6 @@ foreach ($fetchUserById as $user) { ?>
 <?php include realpath(__DIR__ . '/app/layout/footer.php') ?>
 
 <script>
-    // Daily Expenses Chart
     var dailyExpenses = <?php echo $daily_bill_expenses_json; ?>;
     var dailyLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -210,7 +195,6 @@ foreach ($fetchUserById as $user) { ?>
         }
     });
 
-    // Weekly Expenses Chart
     var weeklyExpenses = <?php echo $weekly_bill_expenses_json; ?>;
     var weeklyLabels = <?php echo $weekly_bill_labels_json; ?>;
 
@@ -238,7 +222,6 @@ foreach ($fetchUserById as $user) { ?>
         }
     });
 
-    // Monthly Expenses Chart
     var monthlyExpenses = <?php echo $monthly_bill_expenses_json; ?>;
     var monthlyLabels = <?php echo $monthly_bill_labels_json; ?>;
 
@@ -266,7 +249,6 @@ foreach ($fetchUserById as $user) { ?>
         }
     });
 
-    // Yearly Expenses Chart
     var yearlyExpenses = <?php echo $yearly_bill_expenses_json; ?>;
     var yearlyLabels = ['2020', '2021', '2022', '2023', '2024', '2025'];
 

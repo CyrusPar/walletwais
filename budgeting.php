@@ -1,22 +1,17 @@
 <?php
 function displayBudgeting($userId) {
-    global $usersFacade; // Assuming $usersFacade is defined elsewhere
+    global $usersFacade;
 
-    // Fetch the user by userId
     $fetchUserById = $usersFacade->fetchUserById($userId);
 
     foreach ($fetchUserById as $user) {
-        // Get the wallet value
         $walletValue = $user['wallet'];
-
-        // Calculate daily and weekly values
-        $dailyValue = $walletValue / 31; // Dividing by 31 (days in a month)
-        $weeklyValue = $walletValue / 4; // Dividing by 4 (weeks in a month)
+        $dailyValue = $walletValue / 31;
+        $weeklyValue = $walletValue / 4;
         ?>
         <div class="wcontainer">
             <div class="wcard">
                 <h2>Budgeting Suggestion</h2>
-                <!-- Second Row: Daily and Weekly Breakdown -->
                 <div class="wbreakdown">
                     <div class="breakdown-item">
                         <h4>Daily</h4>

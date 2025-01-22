@@ -1,29 +1,24 @@
 <?php
 function remainingBudget($userId) {
     date_default_timezone_set('Asia/Manila');
-    global $usersFacade, $billsFacade; // Assuming $usersFacade and $billsFacade are defined elsewhere
+    global $usersFacade, $billsFacade;
 
-    // Fetch the user by userId
     $fetchUserById = $usersFacade->fetchUserById($userId);
 
     foreach ($fetchUserById as $user) {
-        // Get the wallet value and calculate allowances
         $walletValue = $user['wallet'];
         $dailyAllowance = $walletValue / 31;
         $weeklyAllowance = $walletValue / 4;
 
-        // Get today's date and the start of the week
         $today = new DateTime();
         $startOfWeek = (clone $today)->modify('Monday this week')->format('Y-m-d');
         $todayFormatted = $today->format('Y-m-d');
 
-        // Fetch the bills
         $fetchBillsByCode = $billsFacade->fetchBillByCode($user['user_code']);
         $todayExpenses = 0;
         $weeklyExpenses = 0;
         $todayBills = [];
 
-        // Calculate today's expenses and total weekly expenses
         foreach ($fetchBillsByCode as $bill) {
             $billDate = new DateTime($bill['Date']);
             $billExpense = (float) $bill['expense'];
@@ -38,11 +33,9 @@ function remainingBudget($userId) {
             }
         }
 
-        // Calculate remaining allowances
         $remainingDailyAllowance = $dailyAllowance - $todayExpenses;
         $remainingWeeklyAllowance = $weeklyAllowance - $weeklyExpenses;
 
-        // Determine colors and warning messages
         $circleColorDaily = $remainingDailyAllowance < 0 ? 'red' : '#058240';
         $circleColorWeekly = $remainingWeeklyAllowance < 0 ? 'red' : '#058240';
         $warningMessageDaily = $remainingDailyAllowance < 0 ? 'Daily expense exceeded!' : '';
@@ -51,7 +44,6 @@ function remainingBudget($userId) {
         ?>
         <h2 style="text-align: center; color: #058240; font-size: 28px; font-weight: bold; margin-bottom: 20px; margin-top:20px;">Expense Tracker</h2>
 
-        <!-- Daily Tracker -->
         <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; margin-bottom: 40px;">
             <h3 style="color: #058240; text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Daily Tracker</h3>
 
@@ -65,7 +57,6 @@ function remainingBudget($userId) {
             <?php endif; ?>
         </div>
 
-        <!-- Weekly Tracker -->
         <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; margin-bottom: 40px;">
             <h3 style="color: #058240; text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Weekly Tracker</h3>
 
@@ -79,7 +70,6 @@ function remainingBudget($userId) {
             <?php endif; ?>
         </div>
 
-        <!-- Bills for Today -->
         <?php if (!empty($todayBills)): ?>
             <div style="background-color: #e0f9e0; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);">
                 <h3 style="color: #058240;">Bills for Today:</h3>

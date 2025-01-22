@@ -14,14 +14,12 @@ if ($userId == 0) {
     header("Location: splash.php");
 }
 
-// Message variables to display alerts
 $message = null;
 $messageType = null;
 
 if (isset($_POST['addAmount'])) {
     $amountToAdd = floatval($_POST['amount']);
     if ($amountToAdd > 0) {
-        // Call the updateWallet method to add the amount to the wallet
         $updateResult = $usersFacade->updateWallet($userId, $amountToAdd);
 
         if ($updateResult) {
@@ -40,7 +38,6 @@ if (isset($_POST['addAmount'])) {
 if (isset($_POST['addSavings'])) {
     $amountToAddSavings = floatval($_POST['savings']);
     if ($amountToAddSavings > 0) {
-        // Call the updateSavings method to add the amount to savings
         $updateSavingsResult = $usersFacade->updateSavings($userId, $amountToAddSavings);
 
         if ($updateSavingsResult) {
@@ -56,15 +53,13 @@ if (isset($_POST['addSavings'])) {
     }
 }
 
-// Logic for transferring savings to wallet
 if (isset($_POST['transferSavings'])) {
     $amountToTransfer = floatval($_POST['transferAmount']);
     $userSavings = $usersFacade->fetchSavingsByUserId($userId);
     if ($amountToTransfer > 0 && $amountToTransfer <= $userSavings) {
-        // Call function to update wallet and deduct savings
         $updateWalletResult = $usersFacade->updateWallet($userId, $amountToTransfer);
         if ($updateWalletResult) {
-            $updateSavingsResult = $usersFacade->updateSavings($userId, -$amountToTransfer); // Deduct savings
+            $updateSavingsResult = $usersFacade->updateSavings($userId, -$amountToTransfer);
             if ($updateSavingsResult) {
                 $message = "Savings transferred to wallet successfully!";
                 $messageType = "success";
@@ -93,9 +88,9 @@ foreach ($fetchUserById as $user) { ?>
         .wallet-container,
         .savings-container {
             display: flex;
-            flex-direction: column; /* Stack the cards and buttons vertically */
-            justify-content: flex-start; /* Align to the top */
-            align-items: center; /* Horizontally center */
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
             height: 55vh;
             text-align: center;
             color: white;
@@ -112,7 +107,7 @@ foreach ($fetchUserById as $user) { ?>
             text-align: center;
             width: 100%;
             max-width: 400px;
-            margin-top: 20px; /* Adjust the margin to move the card down a bit */
+            margin-top: 20px;
         }
 
         .wallet-card h2,
@@ -153,7 +148,6 @@ foreach ($fetchUserById as $user) { ?>
     <div class="container">
         <div class="app-header d-flex justify-content-between">
             <div class="d-flex align-items-center">
-                <!-- Add Click Event to Toggle Sidebar -->
                 <i class="bi bi-list text-light fs-1" id="sidebarToggle"></i>
             </div>
             <div class="d-flex align-items-center text-center">
@@ -168,7 +162,6 @@ foreach ($fetchUserById as $user) { ?>
         include 'notif.php';
         checkNotifications($userId);
         ?>
-        <!-- Alert Section (above the wallet card) -->
         <?php if ($message) { ?>
             <div class="alert alert-<?= $messageType ?> alert-dismissible fade show" role="alert">
                 <?= $message ?>
@@ -176,32 +169,27 @@ foreach ($fetchUserById as $user) { ?>
             </div>
         <?php } ?>
 
-        <!-- Wallet Card Section -->
         <div class="wallet-container">
             <div class="wallet-card">
                 <h2>Wallet</h2>
                 <div class="amount"><?= number_format($user['wallet'], 2) ?> Php</div>
             </div>
 
-            <!-- Add Amount Button (under the wallet card) -->
             <div class="d-flex justify-content-between align-items-center">
                 <button class="add-amount-btn" onclick="showAddAmountModal()">Add Amount</button>
             </div>
-                    <!-- Savings Card Section -->
-        <div class="wallet-container">
+                    <div class="wallet-container">
             <div class="wallet-card">
                 <h2>Savings</h2>
                 <div class="amount"><?= number_format($user['savings'], 2) ?> Php</div>
             </div>
 
-            <!-- Add Savings Button (under the savings card) -->
             <div class="d-flex justify-content-center">
                 <button class="add-a-btn" onclick="showAddSavingsModal()">Add Amount to Savings</button>
                 <button class="add-a-btn" onclick="showTransferSavingsModal()">Transfer Savings to Wallet</button>
             </div>
         </div>
 
-        <!-- Include Budgeting, Daily Tracker, and Remaining Budget Sections -->
         <?php
         include 'balance.php';
         displayBalance($userId);
@@ -217,7 +205,6 @@ foreach ($fetchUserById as $user) { ?>
 
     </div>
 
-    <!-- Modal for Adding Amount to Wallet -->
     <div id="addAmountModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center;">
         <div style="background: #fff; padding: 20px; border-radius: 8px; width: 300px; text-align: center;">
             <h5>Add Amount to Wallet</h5>
@@ -229,7 +216,6 @@ foreach ($fetchUserById as $user) { ?>
         </div>
     </div>
 
-    <!-- Modal for Adding Amount to Savings -->
     <div id="addSavingsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center;">
         <div style="background: #fff; padding: 20px; border-radius: 8px; width: 300px; text-align: center;">
             <h5>Add Amount to Savings</h5>
@@ -241,7 +227,6 @@ foreach ($fetchUserById as $user) { ?>
         </div>
     </div>
 
-    <!-- Modal for Transfer Savings to Wallet -->
     <div id="transferSavingsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center;">
         <div style="background: #fff; padding: 20px; border-radius: 8px; width: 300px; text-align: center;">
             <h5>Transfer Savings to Wallet</h5>

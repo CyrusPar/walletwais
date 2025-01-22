@@ -34,7 +34,7 @@ foreach ($fetchUserById as $user) { ?>
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 15px;
-            border: 4px solid #058240; /* Green border around the image */
+            border: 4px solid #058240; 
         }
 
         .profile-card h5 {

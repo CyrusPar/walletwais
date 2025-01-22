@@ -14,14 +14,12 @@ if ($userId == 0) {
     header("Location: splash.php");
 }
 
-// Message variables to display alerts
 $message = null;
 $messageType = null;
 
 if (isset($_POST['addAmount'])) {
     $amountToAdd = floatval($_POST['amount']);
     if ($amountToAdd > 0) {
-        // Call the updateWallet method to add the amount to the wallet
         $updateResult = $usersFacade->updateWallet($userId, $amountToAdd);
 
         if ($updateResult) {
@@ -54,7 +52,6 @@ foreach ($fetchUserById as $user) { ?>
     <div class="container">
         <div class="app-header d-flex justify-content-between">
             <div class="d-flex align-items-center">
-                <!-- Add Click Event to Toggle Sidebar -->
                 <i class="bi bi-list text-light fs-1" id="sidebarToggle"></i>
             </div>
             <div class="d-flex align-items-center text-center">
@@ -65,7 +62,6 @@ foreach ($fetchUserById as $user) { ?>
     </div>
 
     <div class="app-body bg-light p-3">
-        <!-- Alert Section -->
         <?php if ($message) { ?>
             <div class="alert alert-<?= $messageType ?> alert-dismissible fade show" role="alert">
                 <?= $message ?>
@@ -73,7 +69,6 @@ foreach ($fetchUserById as $user) { ?>
             </div>
         <?php } ?>
         
-        <!-- My Bills Section -->
         <div class="d-flex justify-content-between align-items-center">
             <h5>My Bills</h5>
         </div>
@@ -99,7 +94,6 @@ foreach ($fetchUserById as $user) { ?>
             <?php } ?>
         </div>
 
-        <!-- Graph for My Bills -->
         <div class="d-flex justify-content-between align-items-center mt-3">
             <h5>My Bills Graph</h5>
         </div>
@@ -107,13 +101,11 @@ foreach ($fetchUserById as $user) { ?>
             <canvas id="billsChart" width="400" height="200"></canvas>
         </div>
 
-        <!-- Group Bills Section -->
         <div class="d-flex justify-content-between align-items-center mt-3">
             <h5>Group Bills</h5>
         </div>
         <div class="row mx-0">
             <?php
-            // Now using fetchGroupBillByName method instead of fetchGroupBillByCode
             $fetchGroupBillByCode = $groupMembersFacade->fetchGroupBillByUserCode($userCode);
             $groupBillNames = [];
             $groupExpenses = [];
@@ -121,14 +113,12 @@ foreach ($fetchUserById as $user) { ?>
             foreach ($fetchGroupBillByCode as $bill) { 
                 $groupBillNames[] = $bill["bill_name"];
                 
-                // Get the group members and calculate the 'toPay' amount for each member
                 $totalExpense = 0;
                 $fetchGroupMembersByBillName = $groupMembersFacade->fetchGroupMembersByUserCodeBillName($userCode, $bill["bill_name"]);
                 foreach ($fetchGroupMembersByBillName as $member) {
                     $totalExpense += $member["contribution"];
                 }
 
-                // Calculate the total expenses for the group bill
                 $groupExpenses[] = $totalExpense;
                 $groupExpensesValues[] = $totalExpense;
             ?>
@@ -155,7 +145,6 @@ foreach ($fetchUserById as $user) { ?>
             <?php } ?>
         </div>
 
-        <!-- Graph for Group Bills -->
         <div class="d-flex justify-content-between align-items-center mt-3">
             <h5>Group Bills Graph</h5>
         </div>
@@ -166,15 +155,14 @@ foreach ($fetchUserById as $user) { ?>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // My Bills Graph
         const ctx1 = document.getElementById('billsChart').getContext('2d');
         const billsChart = new Chart(ctx1, {
-            type: 'bar', // Choose the type of chart, e.g., 'bar', 'line', 'pie'
+            type: 'bar',
             data: {
-                labels: <?php echo json_encode($billNames); ?>, // Bill names as labels
+                labels: <?php echo json_encode($billNames); ?>,
                 datasets: [{
                     label: 'Bill Expenses',
-                    data: <?php echo json_encode($expenses); ?>, // Bill expenses as data
+                    data: <?php echo json_encode($expenses); ?>,
                     backgroundColor: 'rgba(0, 123, 255, 0.5)',
                     borderColor: 'rgba(0, 123, 255, 1)',
                     borderWidth: 1
@@ -190,15 +178,14 @@ foreach ($fetchUserById as $user) { ?>
             }
         });
 
-        // Group Bills Graph
         const ctx2 = document.getElementById('groupBillsChart').getContext('2d');
         const groupBillsChart = new Chart(ctx2, {
-            type: 'bar', // Choose the type of chart, e.g., 'bar', 'line', 'pie'
+            type: 'bar',
             data: {
-                labels: <?php echo json_encode($groupBillNames); ?>, // Group Bill names as labels
+                labels: <?php echo json_encode($groupBillNames); ?>,
                 datasets: [{
                     label: 'Group Bill Expenses',
-                    data: <?php echo json_encode($groupExpenses); ?>, // Group Bill expenses as data
+                    data: <?php echo json_encode($groupExpenses); ?>,
                     backgroundColor: 'rgba(255, 99, 132, 0.5)',
                     borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 1
@@ -215,7 +202,6 @@ foreach ($fetchUserById as $user) { ?>
         });
     </script>
 
-    <!-- Modal for Adding Amount -->
     <div id="addAmountModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center;">
         <div style="background: #fff; padding: 20px; border-radius: 8px; width: 300px; text-align: center;">
             <h5>Add Amount to Wallet</h5>
