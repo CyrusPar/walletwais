@@ -12,27 +12,35 @@ function remainingBudget($userId) {
         $dailyAllowance = $walletValue / 31;
         $weeklyAllowance = $walletValue / 4;
 
-        // Get today's date
+        // Get today's date and the start of the week
         $today = new DateTime();
+        $startOfWeek = (clone $today)->modify('Monday this week')->format('Y-m-d');
         $todayFormatted = $today->format('Y-m-d');
 
-        // Fetch the bills for today
+        // Fetch the bills
         $fetchBillsByCode = $billsFacade->fetchBillByCode($user['user_code']);
         $todayExpenses = 0;
+        $weeklyExpenses = 0;
         $todayBills = [];
 
-        // Loop through bills and calculate today's expenses
+        // Calculate today's expenses and total weekly expenses
         foreach ($fetchBillsByCode as $bill) {
             $billDate = new DateTime($bill['Date']);
+            $billExpense = (float) $bill['expense'];
+
             if ($billDate->format('Y-m-d') == $todayFormatted) {
-                $todayExpenses += (float)$bill['expense'];
+                $todayExpenses += $billExpense;
                 $todayBills[] = $bill;
+            }
+
+            if ($billDate >= new DateTime($startOfWeek) && $billDate <= new DateTime($todayFormatted)) {
+                $weeklyExpenses += $billExpense;
             }
         }
 
         // Calculate remaining allowances
         $remainingDailyAllowance = $dailyAllowance - $todayExpenses;
-        $remainingWeeklyAllowance = $weeklyAllowance - $todayExpenses;
+        $remainingWeeklyAllowance = $weeklyAllowance - $weeklyExpenses;
 
         // Determine colors and warning messages
         $circleColorDaily = $remainingDailyAllowance < 0 ? 'red' : '#058240';
@@ -41,9 +49,6 @@ function remainingBudget($userId) {
         $warningMessageWeekly = $remainingWeeklyAllowance < 0 ? 'Weekly expense exceeded!' : '';
 
         ?>
-
-
-
         <h2 style="text-align: center; color: #058240; font-size: 28px; font-weight: bold; margin-bottom: 20px; margin-top:20px;">Expense Tracker</h2>
 
         <!-- Daily Tracker -->
@@ -109,6 +114,7 @@ function remainingBudget($userId) {
         <?php endif; ?>
     <?php }
 }
+
 ?>
 
 <style>
